@@ -1,9 +1,9 @@
-module sudachen.xyz/pkg/lazy
+module go4ml.xyz/lazy
 
 go 1.16
 
 require (
+	go4ml.xyz/errstr v0.0.0-20220319161933-fddf66371f9a
+	go4ml.xyz/fu v0.0.0-20220319164044-312fabe3aeaf
 	gotest.tools/v3 v3.0.3
-	sudachen.xyz/pkg/errstr v0.0.0-20211120180422-ba322642b41e
-	sudachen.xyz/pkg/fu v0.0.0-20211120180804-09ad016d53e6
 )

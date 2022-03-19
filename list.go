@@ -1,8 +1,8 @@
 package lazy
 
 import (
+	"go4ml.xyz/errstr"
 	"reflect"
-	"sudachen.xyz/pkg/errstr"
 )
 
 func List(list interface{}) Source {
@@ -27,7 +27,7 @@ func List(list interface{}) Source {
 	}
 }
 
-func Sequence(gen func(int/*optional*/) interface{}) Source {
+func Sequence(gen func(int /*optional*/) interface{}) Source {
 	return func(xs ...interface{}) Stream {
 		pf := NoPrefetch
 		worker := 0

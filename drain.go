@@ -1,16 +1,16 @@
 package lazy
 
 import (
-	"sudachen.xyz/pkg/errstr"
-	"sudachen.xyz/pkg/fu"
+	"go4ml.xyz/errstr"
+	"go4ml.xyz/fu"
 	"sync"
 )
 
-type Worker func(int, interface{}, error)error
+type Worker func(int, interface{}, error) error
 type WorkerFactory func(concurrency int) []Worker
 
 func (zf Source) Drain(wf WorkerFactory, concurrency ...int) error {
-	switch ws := wf(fu.Fnzi(fu.Fnzi(concurrency...),1)); len(ws) {
+	switch ws := wf(fu.Fnzi(fu.Fnzi(concurrency...), 1)); len(ws) {
 	case 0:
 		return errstr.New("no workers provided for drain")
 	case 1:
@@ -36,12 +36,12 @@ func concurrentDrain(zf Source, ws []Worker) error {
 	width := len(ws)
 	wg := sync.WaitGroup{}
 	wg.Add(width)
-	errc := make(chan error,width)
+	errc := make(chan error, width)
 	pf := &prefetch{width: width}
-	for i:=0; i<width; i++ {
-		go func(index int){
+	for i := 0; i < width; i++ {
+		go func(index int) {
 			defer wg.Done()
-			z := zf(func()(int,int,Prefetch){
+			z := zf(func() (int, int, Prefetch) {
 				return index, width, pf.Get
 			})
 		loop:
@@ -51,10 +51,10 @@ func concurrentDrain(zf Source, ws []Worker) error {
 					if x.Err != nil {
 						errc <- x.Err
 					}
-					_ = ws[index](i,NoValue,nil)
+					_ = ws[index](i, NoValue, nil)
 					break loop
 				default:
-					if err := ws[index](i,v,nil); err != nil {
+					if err := ws[index](i, v, nil); err != nil {
 						errc <- err
 						break loop
 					}
@@ -64,8 +64,8 @@ func concurrentDrain(zf Source, ws []Worker) error {
 	}
 	wg.Wait()
 	close(errc)
-	err, _ := <- errc
-	return fu.Fnze(ws[0](0, nil, err),err)
+	err, _ := <-errc
+	return fu.Fnze(ws[0](0, nil, err), err)
 }
 
 func (zf Source) MustDrain(wf WorkerFactory, concurrency ...int) {
@@ -73,4 +73,3 @@ func (zf Source) MustDrain(wf WorkerFactory, concurrency ...int) {
 		panic(err)
 	}
 }
-
